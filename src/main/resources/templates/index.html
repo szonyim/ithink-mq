@@ -1,0 +1,14 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Kezdőlap</title></head>
+<body>
+<div layout:fragment="content">
+
+    <form action="#" th:action="@{/load}" th:object="${mqConnectionModel}" method="post">
+
+    </form>
+
+</div>
+</body>
+</html>

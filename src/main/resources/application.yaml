@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: ithink-mq-web
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.xml
