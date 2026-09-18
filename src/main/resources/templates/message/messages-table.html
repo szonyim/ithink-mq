@@ -26,7 +26,7 @@
                 <td class="text-break"><code th:text="${row.messageId}"></code></td>
                 <td class="text-break" th:text="${row.contentPreview}"></td>
                 <td>
-                    <div class="btn-group btn-group-sm" role="group">
+                    <div class="btn-group" role="group">
                         <a class="btn btn-outline-primary"
                            th:href="@{/messages/{id}(id=${row.messageId})}">View</a>
                         <form th:action="@{/messages/{id}/delete(id=${row.messageId})}"

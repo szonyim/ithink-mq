@@ -36,3 +36,8 @@ body {
     color: transparent;
 }
 
+.message-detail-scroll {
+    max-height: 40vh;
+    overflow: auto;
+}
+
