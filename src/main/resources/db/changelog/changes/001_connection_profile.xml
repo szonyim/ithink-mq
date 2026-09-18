@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="6-create-connection-profile-table" author="szonyim">
+        <createTable tableName="connection_profile">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="host" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="port" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="TEXT"/>
+            <column name="password" type="TEXT"/>
+            <column name="queue_manager" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="channel" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="queue" type="TEXT"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="connection_profile"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

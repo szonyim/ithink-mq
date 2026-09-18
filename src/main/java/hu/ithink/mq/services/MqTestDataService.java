@@ -33,9 +33,9 @@ public class MqTestDataService {
   private static final String QUEUE = "MAIN.QUEUE";
 
   private static final List<String> CUSTOMERS = List.of(
-      "Kovács Anna", "Nagy Béla", "Tóth Eszter", "Szabó Gábor", "Horváth Réka");
+      "Alice Johnson", "Bob Smith", "Carol Williams", "David Brown", "Emma Davis");
   private static final List<String> PRODUCTS = List.of(
-      "Billentyűzet", "Monitor", "Egér", "Fejhallgató", "Webkamera");
+      "Keyboard", "Monitor", "Mouse", "Headset", "Webcam");
 
   private final ObjectMapper objectMapper;
 
@@ -69,7 +69,7 @@ public class MqTestDataService {
     try {
       return new MQQueueManager(QUEUE_MANAGER, properties);
     } catch (MQException e) {
-      throw new MqPutException("Nem sikerült kapcsolódni az MQ szerverhez: " + e.getMessage(), e);
+      throw new MqPutException("Failed to connect to the MQ server: " + e.getMessage(), e);
     }
   }
 
@@ -78,7 +78,7 @@ public class MqTestDataService {
       int openOptions = CMQC.MQOO_OUTPUT | CMQC.MQOO_FAIL_IF_QUIESCING;
       return queueManager.accessQueue(QUEUE, openOptions);
     } catch (MQException e) {
-      throw new MqPutException("Nem sikerült megnyitni a(z) '" + QUEUE + "' queue-t: " + e.getMessage(), e);
+      throw new MqPutException("Failed to open queue '" + QUEUE + "': " + e.getMessage(), e);
     }
   }
 
@@ -90,7 +90,7 @@ public class MqTestDataService {
       message.writeString(content);
       queue.put(message, new MQPutMessageOptions());
     } catch (Exception e) {
-      throw new MqPutException("Nem sikerült üzenetet küldeni a queue-ra: " + e.getMessage(), e);
+      throw new MqPutException("Failed to put message onto the queue: " + e.getMessage(), e);
     }
   }
 
@@ -105,7 +105,7 @@ public class MqTestDataService {
     try {
       return objectMapper.writeValueAsString(payload);
     } catch (Exception e) {
-      throw new MqPutException("Nem sikerült JSON-ná alakítani a teszt üzenetet: " + e.getMessage(), e);
+      throw new MqPutException("Failed to serialize the test message to JSON: " + e.getMessage(), e);
     }
   }
 

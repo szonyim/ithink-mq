@@ -65,13 +65,13 @@ public class MqQueueBrowseService {
     try {
       properties.put(CMQC.PORT_PROPERTY, Integer.parseInt(connection.port()));
     } catch (NumberFormatException e) {
-      throw new MqBrowseException("Érvénytelen port: " + connection.port(), e);
+      throw new MqBrowseException("Invalid port: " + connection.port(), e);
     }
 
     try {
       return new MQQueueManager(connection.queueManager(), properties);
     } catch (MQException e) {
-      throw new MqBrowseException("Nem sikerült kapcsolódni az MQ szerverhez: " + e.getMessage(), e);
+      throw new MqBrowseException("Failed to connect to the MQ server: " + e.getMessage(), e);
     }
   }
 
@@ -80,7 +80,7 @@ public class MqQueueBrowseService {
       int openOptions = CMQC.MQOO_BROWSE | CMQC.MQOO_INPUT_SHARED | CMQC.MQOO_FAIL_IF_QUIESCING;
       return queueManager.accessQueue(queueName, openOptions);
     } catch (MQException e) {
-      throw new MqBrowseException("Nem sikerült megnyitni a(z) '" + queueName + "' queue-t: " + e.getMessage(), e);
+      throw new MqBrowseException("Failed to open queue '" + queueName + "': " + e.getMessage(), e);
     }
   }
 
@@ -98,7 +98,7 @@ public class MqQueueBrowseService {
         if (e.getReason() == CMQC.MQRC_NO_MSG_AVAILABLE) {
           break;
         }
-        throw new MqBrowseException("Hiba az üzenetek olvasása közben: " + e.getMessage(), e);
+        throw new MqBrowseException("Error while reading messages: " + e.getMessage(), e);
       }
       messages.add(toEntity(mqMessage));
     }
@@ -117,7 +117,7 @@ public class MqQueueBrowseService {
     try {
       return mqMessage.readStringOfByteLength(mqMessage.getDataLength());
     } catch (Exception e) {
-      throw new MqBrowseException("Nem sikerült beolvasni egy üzenet tartalmát: " + e.getMessage(), e);
+      throw new MqBrowseException("Failed to read a message's content: " + e.getMessage(), e);
     }
   }
 
@@ -146,7 +146,7 @@ public class MqQueueBrowseService {
     try {
       return objectMapper.writeValueAsString(properties);
     } catch (Exception e) {
-      throw new MqBrowseException("Nem sikerült JSON-ná alakítani egy üzenet tulajdonságait: " + e.getMessage(), e);
+      throw new MqBrowseException("Failed to serialize a message's properties to JSON: " + e.getMessage(), e);
     }
   }
 

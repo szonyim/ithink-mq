@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="table" id="messagesTableContainer">
+
+    <p class="text-muted mb-2">
+        <span th:text="${messagePage.totalElements}">0</span> message(s)
+        <span th:if="${messagePage.query != null and !messagePage.query.isEmpty()}">
+            (filtered: "<span th:text="${messagePage.query}"></span>")
+        </span>
+    </p>
+
+    <div th:if="${messagePage.empty}" class="alert alert-secondary">No results found.</div>
+
+    <div th:unless="${messagePage.empty}" class="messages-table-scroll">
+        <table class="table table-striped table-hover align-middle">
+            <thead>
+            <tr>
+                <th style="width: 15%">MQ Message ID</th>
+                <th>Content</th>
+                <th style="width: 160px">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="row : ${messagePage.content}">
+                <td class="text-break"><code th:text="${row.messageId}"></code></td>
+                <td class="text-break" th:text="${row.contentPreview}"></td>
+                <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a class="btn btn-outline-primary"
+                           th:href="@{/messages/{id}(id=${row.messageId})}">View</a>
+                        <form th:action="@{/messages/{id}/delete(id=${row.messageId})}"
+                              method="post" data-confirm="Are you sure you want to delete this message?">
+                            <input type="hidden" name="query" th:value="${messagePage.query}"/>
+                            <input type="hidden" name="page" th:value="${messagePage.page}"/>
+                            <button type="submit" class="btn btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <nav th:if="${messagePage.totalPages > 1}" aria-label="Pagination">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${!messagePage.hasPrevious()} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/(query=${messagePage.query}, page=${messagePage.page - 1})}">Previous</a>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link" th:text="${(messagePage.page + 1) + ' / ' + messagePage.totalPages}"></span>
+            </li>
+            <li class="page-item" th:classappend="${!messagePage.hasNext()} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/(query=${messagePage.query}, page=${messagePage.page + 1})}">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+</body>
+</html>

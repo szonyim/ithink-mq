@@ -22,7 +22,7 @@ class TestDataController {
   public ResponseEntity<String> load() {
     try {
       int loaded = mqTestDataService.loadTestData();
-      return ResponseEntity.ok(loaded + " teszt üzenet elküldve az MQ queue-ra.");
+      return ResponseEntity.ok(loaded + " test message(s) sent to the MQ queue.");
     } catch (MqPutException e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }

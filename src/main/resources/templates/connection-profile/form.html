@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="fields">
+    <div class="col-md-4">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-control" th:field="*{name}" required/>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Host</label>
+        <input type="text" class="form-control" th:field="*{host}" required/>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">Port</label>
+        <input type="text" class="form-control" th:field="*{port}" required/>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">Queue Manager</label>
+        <input type="text" class="form-control" th:field="*{queueManager}" required/>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Channel</label>
+        <input type="text" class="form-control" th:field="*{channel}" required/>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Queue</label>
+        <input type="text" class="form-control" th:field="*{queue}"/>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" th:field="*{username}"/>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" th:field="*{password}"/>
+    </div>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head><title>Connection profiles</title></head>
+<body>
+<th:block layout:fragment="content">
+    <div class="container-fluid py-3">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Connection profiles</h4>
+            <a class="btn btn-primary" th:href="@{/connection-profile/add}">New connection</a>
+        </div>
+
+        <div th:if="${connectionProfiles.empty}" class="alert alert-secondary">No saved connections.</div>
+
+        <table th:unless="${connectionProfiles.empty}" class="table table-striped table-hover align-middle">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Host</th>
+                <th>Port</th>
+                <th>Queue Manager</th>
+                <th>Channel</th>
+                <th>Queue</th>
+                <th style="width: 160px">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="profile : ${connectionProfiles}">
+                <td th:text="${profile.name}"></td>
+                <td th:text="${profile.host}"></td>
+                <td th:text="${profile.port}"></td>
+                <td th:text="${profile.queueManager}"></td>
+                <td th:text="${profile.channel}"></td>
+                <td th:text="${profile.queue}"></td>
+                <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a class="btn btn-outline-primary" th:href="@{/connection-profile/{id}/edit(id=${profile.id})}">Edit</a>
+                        <form th:action="@{/connection-profile/{id}/delete(id=${profile.id})}" method="post"
+                              data-confirm="Are you sure you want to delete this connection?">
+                            <button type="submit" class="btn btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</th:block>
+</body>
+</html>

@@ -26,22 +26,22 @@ class MessageController {
     this.messageQueryService = messageQueryService;
   }
 
-  @GetMapping("/messages/fragment")
-  public String fragment(@RequestParam(required = false) String query,
+  @GetMapping("/messages/search")
+  public String search(@RequestParam(required = false) String query,
                           @RequestParam(defaultValue = "0") int page,
                           Model model) {
     model.addAttribute("messagePage", messageQueryService.search(query, page));
-    return "fragments/messages-table :: table";
+    return "message/messages-table :: table";
   }
 
   @GetMapping("/messages/{messageId}")
   public String view(@PathVariable String messageId, Model model) {
     Message message = messageService.findById(messageId);
     if (message == null) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Üzenet nem található: " + messageId);
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found: " + messageId);
     }
     model.addAttribute("message", message);
-    return "message-view";
+    return "message/message-view";
   }
 
   @PostMapping("/messages/{messageId}/delete")
