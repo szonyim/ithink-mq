@@ -14,16 +14,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import hu.ithink.mq.services.MessageQueryService;
 import hu.ithink.mq.services.MessageService;
+import tools.jackson.databind.ObjectMapper;
 
 @Controller
 class MessageController {
 
   private final MessageService messageService;
   private final MessageQueryService messageQueryService;
+  private final ObjectMapper objectMapper;
 
-  MessageController(MessageService messageService, MessageQueryService messageQueryService) {
+  MessageController(MessageService messageService, MessageQueryService messageQueryService, ObjectMapper objectMapper) {
     this.messageService = messageService;
     this.messageQueryService = messageQueryService;
+    this.objectMapper = objectMapper;
   }
 
   @GetMapping("/messages/search")
@@ -40,8 +43,22 @@ class MessageController {
     if (message == null) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Message not found: " + messageId);
     }
+    message.setContent(prettyPrintIfJson(message.getContent()));
+    message.setProperties(prettyPrintIfJson(message.getProperties()));
     model.addAttribute("message", message);
     return "message/message-view";
+  }
+
+  private String prettyPrintIfJson(String text) {
+    if (text == null) {
+      return null;
+    }
+    try {
+      Object json = objectMapper.readValue(text, Object.class);
+      return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+    } catch (Exception e) {
+      return text;
+    }
   }
 
   @PostMapping("/messages/{messageId}/delete")

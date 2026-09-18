@@ -38,4 +38,4 @@ Host: localhost
 Port: 1414
 QueueManager: QM1
 Channel: SYSTEM.ADMIN.SVRCONN
-Queue: MAIN.Q
+Queue: MAIN.QUEUE
