@@ -34,7 +34,7 @@
                 <td th:text="${profile.channel}"></td>
                 <td th:text="${profile.queue}"></td>
                 <td>
-                    <div class="btn-group btn-group-sm" role="group">
+                    <div class="btn-group" role="group">
                         <a class="btn btn-outline-primary" th:href="@{/connection-profile/{id}/edit(id=${profile.id})}">Edit</a>
                         <form th:action="@{/connection-profile/{id}/delete(id=${profile.id})}" method="post"
                               data-confirm="Are you sure you want to delete this connection?">

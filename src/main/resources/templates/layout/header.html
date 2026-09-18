@@ -1,7 +1,7 @@
 <th:block th:fragment="header">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">iThink MQ</a>
+            <a class="navbar-brand navbar-brand-lime lime-transition" href="#">iThink MQ</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -17,7 +17,7 @@
                     </li>
                 </ul>
                 <div class="d-flex align-items-center">
-                    <div class="input-group me-2">
+                    <div class="input-group header-search-group me-2">
                         <input id="messageSearchInput" class="form-control" type="search"
                                placeholder="Search messages..." aria-label="Search">
                         <button id="messageSearchButton" class="btn btn-outline-secondary" type="button"
@@ -25,7 +25,7 @@
                     </div>
                     <button id="loadTestDataButton" class="btn btn-outline-secondary me-2 d-none" type="button">Load test data</button>
                     <button id="purgeMessagesButton" class="btn btn-outline-danger" type="button"
-                            title="Delete all messages" aria-label="Delete all messages">🗑</button>
+                            title="Delete all messages" aria-label="Delete all messages">Truncate messages</button>
                 </div>
             </div>
         </div>
