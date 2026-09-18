@@ -36,6 +36,7 @@
                 <div class="d-flex align-items-center">
                     <input id="messageSearchInput" class="form-control me-2" type="search"
                            placeholder="Keresés az üzenetek között..." aria-label="Keresés">
+                    <button id="loadTestDataButton" class="btn btn-outline-secondary me-2" type="button">Teszt adatok betöltése</button>
                     <button id="purgeMessagesButton" class="btn btn-outline-danger btn-lg" type="button"
                             title="Összes üzenet törlése" aria-label="Összes üzenet törlése">🗑</button>
                 </div>
@@ -55,6 +56,27 @@
                 fetch(/*[[@{/messages/purge}]]*/ '/messages/purge', {method: 'POST'})
                     .then(function () {
                         window.location.href = /*[[@{/}]]*/ '/';
+                    });
+            });
+        })();
+        (function () {
+            var loadTestDataButton = document.getElementById('loadTestDataButton');
+            if (!loadTestDataButton) {
+                return;
+            }
+            loadTestDataButton.addEventListener('click', function () {
+                loadTestDataButton.disabled = true;
+                fetch(/*[[@{/test-data/load}]]*/ '/test-data/load', {method: 'POST'})
+                    .then(function (response) {
+                        return response.text().then(function (text) {
+                            alert(text);
+                        });
+                    })
+                    .catch(function () {
+                        alert('Hiba történt a teszt adatok betöltése közben.');
+                    })
+                    .finally(function () {
+                        loadTestDataButton.disabled = false;
                     });
             });
         })();

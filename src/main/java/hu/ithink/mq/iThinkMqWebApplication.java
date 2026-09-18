@@ -10,8 +10,6 @@ import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-//@EntityScan("hu.ithink.mq.entities")
-//@EnableJpaRepositories(basePackages = "hu.ithink.mq.repositories")
 public class iThinkMqWebApplication {
 
   public static void main(String[] args) throws IOException {

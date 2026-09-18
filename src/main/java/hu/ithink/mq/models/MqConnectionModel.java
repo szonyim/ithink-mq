@@ -1,14 +1,9 @@
 package hu.ithink.mq.models;
 
-import lombok.Data;
+public record MqConnectionModel(String host, String port, String user, String password, String queueManager,
+                                 String channel, String queue) {
 
-@Data
-public class MqConnectionModel {
-  private String host;
-  private String port;
-  private String user;
-  private String password;
-  private String queueManager;
-  private String channel;
-  private String queue;
+  public MqConnectionModel() {
+    this(null, null, null, null, null, null, null);
+  }
 }

@@ -36,7 +36,7 @@ class IndexController {
     model.addAttribute("mqConnectionModel", mqConnectionModel);
     try {
       int loaded = mqQueueBrowseService.browseAndStore(mqConnectionModel);
-      model.addAttribute("loadSuccess", loaded + " üzenet betöltve a(z) '" + mqConnectionModel.getQueue() + "' queue-ról.");
+      model.addAttribute("loadSuccess", loaded + " üzenet betöltve a(z) '" + mqConnectionModel.queue() + "' queue-ról.");
     } catch (MqBrowseException e) {
       model.addAttribute("loadError", e.getMessage());
     }

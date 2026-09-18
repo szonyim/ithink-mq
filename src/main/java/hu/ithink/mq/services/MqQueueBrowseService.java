@@ -38,7 +38,7 @@ public class MqQueueBrowseService {
   public int browseAndStore(MqConnectionModel connection) {
     MQQueueManager queueManager = connect(connection);
     try {
-      MQQueue queue = openQueueForBrowsing(queueManager, connection.getQueue());
+      MQQueue queue = openQueueForBrowsing(queueManager, connection.queue());
       try {
         List<Message> messages = browseAll(queue);
         messageService.saveAll(messages);
@@ -53,21 +53,21 @@ public class MqQueueBrowseService {
 
   private MQQueueManager connect(MqConnectionModel connection) {
     Hashtable<String, Object> properties = new Hashtable<>();
-    properties.put(CMQC.HOST_NAME_PROPERTY, connection.getHost());
-    properties.put(CMQC.CHANNEL_PROPERTY, connection.getChannel());
+    properties.put(CMQC.HOST_NAME_PROPERTY, connection.host());
+    properties.put(CMQC.CHANNEL_PROPERTY, connection.channel());
     properties.put(CMQC.TRANSPORT_PROPERTY, CMQC.TRANSPORT_MQSERIES_CLIENT);
-    if (connection.getUser() != null && !connection.getUser().isBlank()) {
-      properties.put(CMQC.USER_ID_PROPERTY, connection.getUser());
-      properties.put(CMQC.PASSWORD_PROPERTY, connection.getPassword());
+    if (connection.user() != null && !connection.user().isBlank()) {
+      properties.put(CMQC.USER_ID_PROPERTY, connection.user());
+      properties.put(CMQC.PASSWORD_PROPERTY, connection.password());
     }
     try {
-      properties.put(CMQC.PORT_PROPERTY, Integer.parseInt(connection.getPort()));
+      properties.put(CMQC.PORT_PROPERTY, Integer.parseInt(connection.port()));
     } catch (NumberFormatException e) {
-      throw new MqBrowseException("Érvénytelen port: " + connection.getPort(), e);
+      throw new MqBrowseException("Érvénytelen port: " + connection.port(), e);
     }
 
     try {
-      return new MQQueueManager(connection.getQueueManager(), properties);
+      return new MQQueueManager(connection.queueManager(), properties);
     } catch (MQException e) {
       throw new MqBrowseException("Nem sikerült kapcsolódni az MQ szerverhez: " + e.getMessage(), e);
     }
