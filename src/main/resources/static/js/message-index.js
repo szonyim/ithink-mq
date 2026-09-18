@@ -6,9 +6,15 @@
     }
     var timer = null;
 
-    function performSearch() {
+    function currentPageSize() {
+        var select = document.getElementById('pageSizeSelect');
+        return select ? select.value : 25;
+    }
+
+    function performSearch(pageSize) {
         var term = input.value;
-        var url = '/messages/search?query=' + encodeURIComponent(term) + '&page=0';
+        var size = pageSize || currentPageSize();
+        var url = '/messages/search?query=' + encodeURIComponent(term) + '&page=0&pageSize=' + size;
         fetch(url)
             .then(function (response) {
                 return response.text();
@@ -23,7 +29,9 @@
 
     input.addEventListener('input', function () {
         clearTimeout(timer);
-        timer = setTimeout(performSearch, 300);
+        timer = setTimeout(function () {
+            performSearch();
+        }, 300);
     });
 
     if (searchButton) {
@@ -32,6 +40,15 @@
             performSearch();
         });
     }
+
+    // The page-size select lives inside the messages-table fragment, which gets
+    // replaced wholesale (outerHTML) on every search, so a direct listener on it
+    // would be lost after the first swap — delegate from a node that never changes.
+    document.addEventListener('change', function (event) {
+        if (event.target && event.target.id === 'pageSizeSelect') {
+            performSearch(event.target.value);
+        }
+    });
 })();
 
 (function () {

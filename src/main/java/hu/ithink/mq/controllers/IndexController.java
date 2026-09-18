@@ -29,9 +29,10 @@ class IndexController {
   @GetMapping("/")
   public String index(@RequestParam(required = false) String query,
                        @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "" + MessageQueryService.DEFAULT_PAGE_SIZE) int pageSize,
                        Model model) {
     model.addAttribute("mqConnectionModel", new MqConnectionModel());
-    model.addAttribute("messagePage", messageQueryService.search(query, page));
+    model.addAttribute("messagePage", messageQueryService.search(query, page, pageSize));
     model.addAttribute("connectionProfiles", connectionProfileService.findAll());
     return "message/index";
   }
@@ -45,7 +46,7 @@ class IndexController {
     } catch (MqBrowseException e) {
       model.addAttribute("loadError", e.getMessage());
     }
-    model.addAttribute("messagePage", messageQueryService.search(null, 0));
+    model.addAttribute("messagePage", messageQueryService.search(null, 0, MessageQueryService.DEFAULT_PAGE_SIZE));
     model.addAttribute("connectionProfiles", connectionProfileService.findAll());
     return "message/index";
   }

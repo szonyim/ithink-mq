@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class MessageQueryService {
 
-  public static final int PAGE_SIZE = 100;
+  public static final int DEFAULT_PAGE_SIZE = 25;
+  private static final int MIN_PAGE_SIZE = 1;
+  private static final int MAX_PAGE_SIZE = 500;
   private static final int CONTENT_PREVIEW_LENGTH = 300;
   private static final int MIN_TRIGRAM_TERM_LENGTH = 3;
 
@@ -24,16 +26,24 @@ public class MessageQueryService {
     this.jdbc = jdbc;
   }
 
-  public MessagePage search(String query, int page) {
+  public MessagePage search(String query, int page, int pageSize) {
     String term = query == null ? "" : query.trim();
     int requestedPage = Math.max(page, 0);
+    int size = clampPageSize(pageSize);
 
     long totalElements = term.isEmpty() ? countAll() : countSearch(term);
-    int totalPages = totalElements == 0 ? 0 : (int) Math.ceil(totalElements / (double) PAGE_SIZE);
+    int totalPages = totalElements == 0 ? 0 : (int) Math.ceil(totalElements / (double) size);
     int safePage = totalPages == 0 ? 0 : Math.min(requestedPage, totalPages - 1);
 
-    List<MessageRow> rows = term.isEmpty() ? findAllPage(safePage) : findSearchPage(term, safePage);
-    return new MessagePage(rows, safePage, totalPages, totalElements, PAGE_SIZE, term);
+    List<MessageRow> rows = term.isEmpty() ? findAllPage(safePage, size) : findSearchPage(term, safePage, size);
+    return new MessagePage(rows, safePage, totalPages, totalElements, size, term);
+  }
+
+  private int clampPageSize(int pageSize) {
+    if (pageSize <= 0) {
+      return DEFAULT_PAGE_SIZE;
+    }
+    return Math.min(Math.max(pageSize, MIN_PAGE_SIZE), MAX_PAGE_SIZE);
   }
 
   private long countAll() {
@@ -41,8 +51,8 @@ public class MessageQueryService {
     return count == null ? 0 : count;
   }
 
-  private List<MessageRow> findAllPage(int page) {
-    Map<String, Object> params = Map.of("limit", PAGE_SIZE, "offset", page * PAGE_SIZE);
+  private List<MessageRow> findAllPage(int page, int pageSize) {
+    Map<String, Object> params = Map.of("limit", pageSize, "offset", page * pageSize);
     return jdbc.query("""
         SELECT message_id, %s AS content_preview
         FROM message
@@ -60,10 +70,10 @@ public class MessageQueryService {
     return count == null ? 0 : count;
   }
 
-  private List<MessageRow> findSearchPage(String term, int page) {
+  private List<MessageRow> findSearchPage(String term, int page, int pageSize) {
     Map<String, Object> params = new java.util.HashMap<>(matchParams(term));
-    params.put("limit", PAGE_SIZE);
-    params.put("offset", page * PAGE_SIZE);
+    params.put("limit", pageSize);
+    params.put("offset", page * pageSize);
 
     String whereClause = isTrigramCapable(term)
         ? "m.rowid IN (SELECT rowid FROM message_fts WHERE message_fts MATCH :match)"

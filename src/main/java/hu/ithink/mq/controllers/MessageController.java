@@ -32,8 +32,9 @@ class MessageController {
   @GetMapping("/messages/search")
   public String search(@RequestParam(required = false) String query,
                           @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(defaultValue = "" + MessageQueryService.DEFAULT_PAGE_SIZE) int pageSize,
                           Model model) {
-    model.addAttribute("messagePage", messageQueryService.search(query, page));
+    model.addAttribute("messagePage", messageQueryService.search(query, page, pageSize));
     return "message/messages-table :: table";
   }
 
@@ -64,9 +65,10 @@ class MessageController {
   @PostMapping("/messages/{messageId}/delete")
   public String delete(@PathVariable String messageId,
                         @RequestParam(required = false) String query,
-                        @RequestParam(defaultValue = "0") int page) {
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "" + MessageQueryService.DEFAULT_PAGE_SIZE) int pageSize) {
     messageService.deleteById(messageId);
-    return "redirect:/?query=" + encode(query) + "&page=" + page;
+    return "redirect:/?query=" + encode(query) + "&page=" + page + "&pageSize=" + pageSize;
   }
 
   @PostMapping("/messages/purge")
