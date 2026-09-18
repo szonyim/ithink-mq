@@ -4,6 +4,6 @@ public record MqConnectionModel(String host, String port, String user, String pa
                                  String channel, String queue) {
 
   public MqConnectionModel() {
-    this(null, null, null, null, null, null, null);
+    this("localhost", "1414", null, null, "QM1", "SYSTEM.ADMIN.SVRCONN", null);
   }
 }

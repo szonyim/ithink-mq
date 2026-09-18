@@ -9,7 +9,7 @@
     <div th:if="${loadSuccess}" class="alert alert-success" th:text="${loadSuccess}"></div>
     <div th:if="${loadError}" class="alert alert-danger" th:text="${loadError}"></div>
 
-    <form th:action="@{/load}" th:object="${mqConnectionModel}" method="post" class="row g-2 align-items-end mb-4">
+    <form id="loadForm" th:action="@{/load}" th:object="${mqConnectionModel}" method="post" class="row g-2 align-items-end mb-4">
 
         <div class="col-md-3">
             <label class="form-label">Host</label>
@@ -41,7 +41,7 @@
             <input type="password" class="form-control" th:field="*{password}"/>
         </div>
         <div class="col-md-2">
-            <button type="submit" class="btn btn-primary">Betöltés</button>
+            <button id="loadButton" type="submit" class="btn btn-primary">Betöltés</button>
         </div>
 
     </form>
@@ -54,25 +54,47 @@
 <script layout:fragment="scripts" th:inline="javascript">
     (function () {
         var input = document.getElementById('messageSearchInput');
+        var searchButton = document.getElementById('messageSearchButton');
         if (!input) {
             return;
         }
         var timer = null;
+
+        function performSearch() {
+            var term = input.value;
+            var url = /*[[@{/messages/fragment}]]*/ '/messages/fragment'
+                + '?query=' + encodeURIComponent(term) + '&page=0';
+            fetch(url)
+                .then(function (response) { return response.text(); })
+                .then(function (html) {
+                    var container = document.getElementById('messagesTableContainer');
+                    if (container) {
+                        container.outerHTML = html.trim();
+                    }
+                });
+        }
+
         input.addEventListener('input', function () {
             clearTimeout(timer);
-            var term = input.value;
-            timer = setTimeout(function () {
-                var url = /*[[@{/messages/fragment}]]*/ '/messages/fragment'
-                    + '?query=' + encodeURIComponent(term) + '&page=0';
-                fetch(url)
-                    .then(function (response) { return response.text(); })
-                    .then(function (html) {
-                        var container = document.getElementById('messagesTableContainer');
-                        if (container) {
-                            container.outerHTML = html.trim();
-                        }
-                    });
-            }, 300);
+            timer = setTimeout(performSearch, 300);
+        });
+
+        if (searchButton) {
+            searchButton.addEventListener('click', function () {
+                clearTimeout(timer);
+                performSearch();
+            });
+        }
+    })();
+    (function () {
+        var loadForm = document.getElementById('loadForm');
+        var loadButton = document.getElementById('loadButton');
+        if (!loadForm || !loadButton) {
+            return;
+        }
+        loadForm.addEventListener('submit', function () {
+            loadButton.disabled = true;
+            loadButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Betöltés...';
         });
     })();
 </script>

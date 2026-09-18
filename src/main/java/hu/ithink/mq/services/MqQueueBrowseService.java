@@ -20,8 +20,9 @@ import hu.ithink.mq.entities.Message;
 import hu.ithink.mq.models.MqConnectionModel;
 import org.springframework.stereotype.Service;
 
-// Non-destructively browses every message currently on the queue (they stay on MQ)
-// and upserts them into the local message table for the searchable UI.
+// Non-destructively browses every message currently on the queue (they stay on MQ).
+// On success, replaces the local message table wholesale (purge, then store) so each
+// load reflects exactly what's currently on the queue rather than accumulating stale rows.
 @Service
 public class MqQueueBrowseService {
 
@@ -41,6 +42,7 @@ public class MqQueueBrowseService {
       MQQueue queue = openQueueForBrowsing(queueManager, connection.queue());
       try {
         List<Message> messages = browseAll(queue);
+        messageService.purgeAll();
         messageService.saveAll(messages);
         return messages.size();
       } finally {
