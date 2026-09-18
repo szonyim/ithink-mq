@@ -5,6 +5,79 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <!-- Claude - you should define the table here! -->
+    <changeSet id="1-create-message-table" author="szonyim">
+        <createTable tableName="message">
+            <column name="message_id" type="TEXT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="content" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="properties" type="TEXT"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="message"/>
+        </rollback>
+    </changeSet>
+
+    <!--
+        SQLite FTS5 virtual table with the trigram tokenizer, used for fast substring search
+        over message content/properties/id (text, XML and JSON message bodies alike).
+        It is an "external content" index: it stores no data of its own, only trigram
+        postings that point back at message.rowid, kept in sync by the triggers below.
+    -->
+    <changeSet id="2-create-message-fts-index" author="szonyim">
+        <sql splitStatements="false">
+            CREATE VIRTUAL TABLE message_fts USING fts5(
+                message_id,
+                content,
+                properties,
+                tokenize = 'trigram',
+                content = 'message',
+                content_rowid = 'rowid'
+            )
+        </sql>
+        <rollback>
+            <sql>DROP TABLE message_fts</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3-create-message-fts-insert-trigger" author="szonyim">
+        <sql splitStatements="false">
+            CREATE TRIGGER message_ai AFTER INSERT ON message BEGIN
+                INSERT INTO message_fts(rowid, message_id, content, properties)
+                VALUES (new.rowid, new.message_id, new.content, new.properties);
+            END
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER message_ai</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="4-create-message-fts-delete-trigger" author="szonyim">
+        <sql splitStatements="false">
+            CREATE TRIGGER message_ad AFTER DELETE ON message BEGIN
+                INSERT INTO message_fts(message_fts, rowid, message_id, content, properties)
+                VALUES ('delete', old.rowid, old.message_id, old.content, old.properties);
+            END
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER message_ad</sql>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5-create-message-fts-update-trigger" author="szonyim">
+        <sql splitStatements="false">
+            CREATE TRIGGER message_au AFTER UPDATE ON message BEGIN
+                INSERT INTO message_fts(message_fts, rowid, message_id, content, properties)
+                VALUES ('delete', old.rowid, old.message_id, old.content, old.properties);
+                INSERT INTO message_fts(rowid, message_id, content, properties)
+                VALUES (new.rowid, new.message_id, new.content, new.properties);
+            END
+        </sql>
+        <rollback>
+            <sql>DROP TRIGGER message_au</sql>
+        </rollback>
+    </changeSet>
 
 </databaseChangeLog>

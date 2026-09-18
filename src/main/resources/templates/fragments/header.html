@@ -33,11 +33,30 @@
 <!--                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>-->
 <!--                    </li>-->
                 </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
+                <div class="d-flex align-items-center">
+                    <input id="messageSearchInput" class="form-control me-2" type="search"
+                           placeholder="Keresés az üzenetek között..." aria-label="Keresés">
+                    <button id="purgeMessagesButton" class="btn btn-outline-danger btn-lg" type="button"
+                            title="Összes üzenet törlése" aria-label="Összes üzenet törlése">🗑</button>
+                </div>
             </div>
         </div>
     </nav>
+    <script th:inline="javascript">
+        (function () {
+            var purgeButton = document.getElementById('purgeMessagesButton');
+            if (!purgeButton) {
+                return;
+            }
+            purgeButton.addEventListener('click', function () {
+                if (!confirm('Biztosan törlöd az összes üzenetet?')) {
+                    return;
+                }
+                fetch(/*[[@{/messages/purge}]]*/ '/messages/purge', {method: 'POST'})
+                    .then(function () {
+                        window.location.href = /*[[@{/}]]*/ '/';
+                    });
+            });
+        })();
+    </script>
 </th:block>

@@ -1,5 +1,13 @@
 spring:
   application:
     name: ithink-mq-web
+  datasource:
+    url: jdbc:sqlite:./data/ithink-mq.db
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    open-in-view: false
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: none
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml

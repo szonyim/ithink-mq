@@ -1,4 +1,4 @@
-package models;
+package hu.ithink.mq.models;
 
 import lombok.Data;
 

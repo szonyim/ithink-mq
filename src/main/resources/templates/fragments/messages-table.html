@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="table" id="messagesTableContainer">
+
+    <p class="text-muted mb-2">
+        <span th:text="${messagePage.totalElements}">0</span> üzenet
+        <span th:if="${messagePage.query != null and !messagePage.query.isEmpty()}">
+            (szűrve: "<span th:text="${messagePage.query}"></span>")
+        </span>
+    </p>
+
+    <div th:if="${messagePage.empty}" class="alert alert-secondary">Nincs találat.</div>
+
+    <table th:unless="${messagePage.empty}" class="table table-striped table-hover align-middle">
+        <thead>
+        <tr>
+            <th style="width: 30%">MQ Message ID</th>
+            <th>Tartalom</th>
+            <th style="width: 160px">Műveletek</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="row : ${messagePage.content}">
+            <td class="text-break"><code th:text="${row.messageId}"></code></td>
+            <td class="text-break" th:text="${row.contentPreview}"></td>
+            <td>
+                <a class="btn btn-sm btn-outline-primary"
+                   th:href="@{/messages/{id}(id=${row.messageId})}">Megtekintés</a>
+                <form class="d-inline"
+                      th:action="@{/messages/{id}/delete(id=${row.messageId})}"
+                      method="post" onsubmit="return confirm('Biztosan törlöd ezt az üzenetet?');">
+                    <input type="hidden" name="query" th:value="${messagePage.query}"/>
+                    <input type="hidden" name="page" th:value="${messagePage.page}"/>
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Törlés</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav th:if="${messagePage.totalPages > 1}" aria-label="Lapozás">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${!messagePage.hasPrevious()} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/(query=${messagePage.query}, page=${messagePage.page - 1})}">Előző</a>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link" th:text="${(messagePage.page + 1) + ' / ' + messagePage.totalPages}"></span>
+            </li>
+            <li class="page-item" th:classappend="${!messagePage.hasNext()} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/(query=${messagePage.query}, page=${messagePage.page + 1})}">Következő</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+</body>
+</html>
