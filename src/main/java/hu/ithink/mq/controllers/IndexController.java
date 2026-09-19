@@ -5,6 +5,7 @@ import hu.ithink.mq.services.ConnectionProfileService;
 import hu.ithink.mq.services.MessageQueryService;
 import hu.ithink.mq.exceptions.MqBrowseException;
 import hu.ithink.mq.services.MqQueueBrowseService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,24 +14,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@RequiredArgsConstructor
 class IndexController {
 
   private final MessageQueryService messageQueryService;
   private final MqQueueBrowseService mqQueueBrowseService;
   private final ConnectionProfileService connectionProfileService;
 
-  IndexController(MessageQueryService messageQueryService, MqQueueBrowseService mqQueueBrowseService,
-                   ConnectionProfileService connectionProfileService) {
-    this.messageQueryService = messageQueryService;
-    this.mqQueueBrowseService = mqQueueBrowseService;
-    this.connectionProfileService = connectionProfileService;
-  }
-
   @GetMapping("/")
   public String index(@RequestParam(required = false) String query,
-                       @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "" + MessageQueryService.DEFAULT_PAGE_SIZE) int pageSize,
-                       Model model) {
+                      @RequestParam(defaultValue = "0") int page,
+                      @RequestParam(defaultValue = "" + MessageQueryService.DEFAULT_PAGE_SIZE) int pageSize,
+                      Model model) {
     model.addAttribute("mqConnectionModel", new MqConnectionModel());
     model.addAttribute("messagePage", messageQueryService.search(query, page, pageSize));
     model.addAttribute("connectionProfiles", connectionProfileService.findAll());

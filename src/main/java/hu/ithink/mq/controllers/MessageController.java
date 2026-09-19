@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.net.URLEncoder;
 
 import hu.ithink.mq.entities.Message;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,17 +18,12 @@ import hu.ithink.mq.services.MessageService;
 import tools.jackson.databind.ObjectMapper;
 
 @Controller
+@RequiredArgsConstructor
 class MessageController {
 
   private final MessageService messageService;
   private final MessageQueryService messageQueryService;
   private final ObjectMapper objectMapper;
-
-  MessageController(MessageService messageService, MessageQueryService messageQueryService, ObjectMapper objectMapper) {
-    this.messageService = messageService;
-    this.messageQueryService = messageQueryService;
-    this.objectMapper = objectMapper;
-  }
 
   @GetMapping("/messages/search")
   public String search(@RequestParam(required = false) String query,
