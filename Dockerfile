@@ -25,7 +25,14 @@ ENV PATH=$PATH:/usr/lib/jvm/default-jvm/bin
 # APP part
 
 RUN addgroup -S spring && adduser -S spring -G spring
+# adduser -S creates and chowns /home/spring for us; without a WORKDIR the
+# process would default to cwd "/", which "spring" (non-root) can't write to,
+# breaking the app's relative ./data directory (SQLite file, Liquibase state).
+# The data dir is pre-created and chowned here (not left for the app to create
+# at startup) so a volume mounted over it inherits the right ownership too.
+WORKDIR /home/spring
+RUN mkdir -p /home/spring/data && chown -R spring:spring /home/spring
 USER spring:spring
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-jar","/home/spring/app.jar"]

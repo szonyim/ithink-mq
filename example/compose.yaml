@@ -1,0 +1,12 @@
+services:
+  ithink-mq-web:
+    image: szonyim/ithink-mq:latest
+    container_name: ithink-mq-web
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ithink-mq-data:/home/spring/data
+
+volumes:
+  ithink-mq-data:

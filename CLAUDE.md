@@ -20,7 +20,7 @@ The app creates a `./data` directory on startup (for the SQLite file) — this i
 
 ## CI/CD
 
-`.github/workflows/docker-publish.yml` builds the jar with Maven, builds/signs a Docker image, and pushes it to Docker Hub as `szonyim/ithink-mq`. It self-versions: on every non-PR run it looks at the latest `v<major>.<minor>.<patch>` git tag reachable from history, bumps the patch number (starting at `1.0.0` if no such tag exists yet), tags and pushes that new version, and uses it (plus `latest`) as the Docker image tags. Don't hand-maintain a version anywhere else in the repo for this — the next workflow run derives it from the last pushed tag.
+`.github/workflows/docker-publish.yml` builds the jar with Maven, builds/signs a Docker image, and pushes it to Docker Hub as `szonyim/ithink-mq`. It self-versions: on every non-PR run it looks at the latest `v<major>.<minor>.<patch>` git tag reachable from history, bumps the patch number (starting at `1.0.0` if no such tag exists yet), tags and pushes that new version, and uses it (plus `latest`) as the Docker image tags. Don't hand-maintain a version anywhere else in the repo for this — the next workflow run derives it from the last pushed tag. The image is built for both `linux/amd64` and `linux/arm64` (via `docker/setup-qemu-action` + Buildx's `platforms:` input on `ubuntu-latest`, an amd64 runner, so the arm64 leg is cross-built under emulation) — keep both platforms if you touch this step, otherwise the image won't run natively on Apple Silicon hosts. `example/compose.yaml` is a minimal Docker/Podman Compose file for running the published image.
 
 ## Architecture
 
