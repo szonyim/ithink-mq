@@ -3,72 +3,74 @@
 <body>
 <div th:fragment="table" id="messagesTableContainer">
 
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-        <p class="text-muted mb-0">
-            <span th:text="${messagePage.totalElements}">0</span> message(s)
-            <span th:if="${messagePage.query != null and !messagePage.query.isEmpty()}">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+    <p class="text-muted mb-0">
+      <span th:text="${messagePage.totalElements}">0</span> message(s)
+      <span th:if="${messagePage.query != null and !messagePage.query.isEmpty()}">
                 (filtered: "<span th:text="${messagePage.query}"></span>")
             </span>
-        </p>
-        <div class="d-flex align-items-center gap-2">
-            <label for="pageSizeSelect" class="form-label mb-0">Page size</label>
-            <select id="pageSizeSelect" class="form-select form-select-sm" style="width: auto">
-                <option value="10" th:selected="${messagePage.pageSize == 10}">10</option>
-                <option value="25" th:selected="${messagePage.pageSize == 25}">25</option>
-                <option value="50" th:selected="${messagePage.pageSize == 50}">50</option>
-                <option value="100" th:selected="${messagePage.pageSize == 100}">100</option>
-            </select>
-        </div>
+    </p>
+    <div class="d-flex align-items-center gap-2">
+      <label for="pageSizeSelect" class="form-label mb-0">Page size</label>
+      <select id="pageSizeSelect" class="form-select form-select-sm" style="width: auto">
+        <option value="10" th:selected="${messagePage.pageSize == 10}">10</option>
+        <option value="25" th:selected="${messagePage.pageSize == 25}">25</option>
+        <option value="50" th:selected="${messagePage.pageSize == 50}">50</option>
+        <option value="100" th:selected="${messagePage.pageSize == 100}">100</option>
+      </select>
     </div>
+  </div>
 
-    <div th:if="${messagePage.empty}" class="alert alert-secondary">No results found.</div>
+  <div th:if="${messagePage.empty}" class="alert alert-secondary">No results found.</div>
 
-    <div th:unless="${messagePage.empty}" class="messages-table-scroll">
-        <table class="table table-striped table-hover align-middle">
-            <thead>
-            <tr>
-                <th style="width: 15%">MQ Message ID</th>
-                <th>Content</th>
-                <th style="width: 160px">Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="row : ${messagePage.content}">
-                <td class="text-break"><code th:text="${row.messageId}"></code></td>
-                <td class="text-break" th:text="${row.contentPreview}"></td>
-                <td>
-                    <div class="btn-group" role="group">
-                        <a class="btn btn-outline-primary"
-                           th:href="@{/messages/{id}(id=${row.messageId})}">View</a>
-                        <form th:action="@{/messages/{id}/delete(id=${row.messageId})}"
-                              method="post" data-confirm="Are you sure you want to delete this message?">
-                            <input type="hidden" name="query" th:value="${messagePage.query}"/>
-                            <input type="hidden" name="page" th:value="${messagePage.page}"/>
-                            <input type="hidden" name="pageSize" th:value="${messagePage.pageSize}"/>
-                            <button type="submit" class="btn btn-outline-danger">Delete</button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+  <div th:unless="${messagePage.empty}" class="messages-table-scroll">
+    <table class="table table-striped table-hover align-middle">
+      <thead>
+      <tr>
+        <th style="width: 15%">MQ Message ID</th>
+        <th>Content</th>
+        <th style="width: 160px">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="row : ${messagePage.content}">
+        <td class="text-break"><code th:text="${row.messageId}"></code></td>
+        <td class="text-break" th:text="${row.contentPreview}"></td>
+        <td>
+          <div class="btn-group" role="group">
+            <a class="btn btn-outline-primary"
+               th:href="@{/messages/{id}(id=${row.messageId})}">View</a>
+            <form th:action="@{/messages/{id}/delete(id=${row.messageId})}"
+                  method="post" data-confirm="Are you sure you want to delete this message?">
+              <input type="hidden" name="query" th:value="${messagePage.query}"/>
+              <input type="hidden" name="page" th:value="${messagePage.page}"/>
+              <input type="hidden" name="pageSize" th:value="${messagePage.pageSize}"/>
+              <button type="submit" class="btn btn-outline-danger">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 
-    <nav th:if="${messagePage.totalPages > 1}" aria-label="Pagination">
-        <ul class="pagination">
-            <li class="page-item" th:classappend="${!messagePage.hasPrevious()} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/(query=${messagePage.query}, page=${messagePage.page - 1}, pageSize=${messagePage.pageSize})}">Previous</a>
-            </li>
-            <li class="page-item disabled">
-                <span class="page-link" th:text="${(messagePage.page + 1) + ' / ' + messagePage.totalPages}"></span>
-            </li>
-            <li class="page-item" th:classappend="${!messagePage.hasNext()} ? 'disabled'">
-                <a class="page-link"
-                   th:href="@{/(query=${messagePage.query}, page=${messagePage.page + 1}, pageSize=${messagePage.pageSize})}">Next</a>
-            </li>
-        </ul>
-    </nav>
+  <nav th:if="${messagePage.totalPages > 1}" aria-label="Pagination">
+    <ul class="pagination">
+      <li class="page-item" th:classappend="${!messagePage.hasPrevious()} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{/(query=${messagePage.query}, page=${messagePage.page - 1}, pageSize=${messagePage.pageSize})}">Previous</a>
+      </li>
+      <li class="page-item disabled">
+        <span class="page-link" th:text="${(messagePage.page + 1) + ' / ' + messagePage.totalPages}"></span>
+      </li>
+      <li class="page-item" th:classappend="${!messagePage.hasNext()} ? 'disabled'">
+        <a class="page-link"
+           th:href="@{/(query=${messagePage.query}, page=${messagePage.page + 1}, pageSize=${messagePage.pageSize})}">Next</a>
+      </li>
+    </ul>
+  </nav>
 
 </div>
 </body>

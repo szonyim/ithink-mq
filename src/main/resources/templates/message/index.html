@@ -4,81 +4,93 @@
 <head><title>Home</title></head>
 <body>
 <div layout:fragment="content">
-    <div class="container-fluid py-3">
+  <div class="container-fluid py-3">
 
-        <div th:if="${loadSuccess}" class="alert alert-success" th:text="${loadSuccess}"></div>
-        <div th:if="${loadError}" class="alert alert-danger" th:text="${loadError}"></div>
+    <div th:if="${loadSuccess}" class="alert alert-success" th:text="${loadSuccess}"></div>
+    <div th:if="${loadError}" class="alert alert-danger" th:text="${loadError}"></div>
 
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="mb-0">Connection</h5>
-            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#connectionSection" aria-expanded="true" aria-controls="connectionSection">
-                Show/hide
-            </button>
-        </div>
+    <div class="d-flex justify-content-end mb-2">
+      <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#connectionModal">
+        Connection
+      </button>
+    </div>
 
-        <div class="collapse show" id="connectionSection">
+    <div class="modal fade" id="connectionModal" tabindex="-1" aria-labelledby="connectionModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="connectionModalLabel">Connection</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
             <div class="row g-2 align-items-end mb-2">
-                <div class="col-md-4">
-                    <label class="form-label">Saved connection</label>
-                    <select id="connectionProfileSelect" class="form-select">
-                        <option value="">— Select a saved connection —</option>
-                        <option th:each="p : ${connectionProfiles}"
-                                th:value="${p.id}"
-                                th:text="${p.name}"
-                                th:data-host="${p.host}"
-                                th:data-port="${p.port}"
-                                th:data-queue-manager="${p.queueManager}"
-                                th:data-channel="${p.channel}"
-                                th:data-queue="${p.queue}"
-                                th:data-username="${p.username}"
-                                th:data-password="${p.password}"></option>
-                    </select>
-                </div>
+              <div class="col-md-6">
+                <label class="form-label">Saved connection</label>
+                <select id="connectionProfileSelect" class="form-select">
+                  <option value="">— Select a saved connection —</option>
+                  <option th:each="p : ${connectionProfiles}"
+                          th:value="${p.id}"
+                          th:text="${p.name}"
+                          th:data-host="${p.host}"
+                          th:data-port="${p.port}"
+                          th:data-queue-manager="${p.queueManager}"
+                          th:data-channel="${p.channel}"
+                          th:data-queue="${p.queue}"
+                          th:data-username="${p.username}"
+                          th:data-password="${p.password}"></option>
+                </select>
+              </div>
             </div>
 
             <form id="loadForm" th:action="@{/load}" th:object="${mqConnectionModel}" method="post"
-                  class="row g-2 align-items-end mb-4">
+                  class="row g-2 align-items-end">
 
-                <div class="col-md-3">
-                    <label class="form-label">Host</label>
-                    <input type="text" class="form-control" th:field="*{host}" required/>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Port</label>
-                    <input type="text" class="form-control" th:field="*{port}" required/>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Queue Manager</label>
-                    <input type="text" class="form-control" th:field="*{queueManager}" required/>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Channel</label>
-                    <input type="text" class="form-control" th:field="*{channel}" required/>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Queue</label>
-                    <input type="text" class="form-control" th:field="*{queue}" required/>
-                </div>
+              <div class="col-md-6">
+                <label class="form-label">Host</label>
+                <input type="text" class="form-control" th:field="*{host}" required/>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Port</label>
+                <input type="text" class="form-control" th:field="*{port}" required/>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Queue Manager</label>
+                <input type="text" class="form-control" th:field="*{queueManager}" required/>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Channel</label>
+                <input type="text" class="form-control" th:field="*{channel}" required/>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Queue</label>
+                <input type="text" class="form-control" th:field="*{queue}" required/>
+              </div>
 
-                <div class="col-md-3">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-control" th:field="*{user}"/>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control" th:field="*{password}"/>
-                </div>
-                <div class="col-md-2">
-                    <button id="loadButton" type="submit" class="btn btn-primary">Load</button>
-                </div>
+              <div class="col-md-6">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" th:field="*{user}"/>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" th:field="*{password}"/>
+              </div>
 
             </form>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="loadButton" type="submit" form="loadForm" class="btn btn-primary">Load</button>
+          </div>
         </div>
-
-        <div th:replace="~{message/messages-table :: table}"></div>
-
+      </div>
     </div>
+
+    <div th:replace="~{message/messages-table :: table}"></div>
+
+  </div>
 </div>
 
 <script layout:fragment="scripts" src="/js/message-index.js"></script>
