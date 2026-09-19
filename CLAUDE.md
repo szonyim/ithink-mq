@@ -18,6 +18,10 @@ Use the Maven wrapper (`mvnw`), not a system-installed Maven.
 
 The app creates a `./data` directory on startup (for the SQLite file) — this is gitignored.
 
+## CI/CD
+
+`.github/workflows/docker-publish.yml` builds the jar with Maven, builds/signs a Docker image, and pushes it to Docker Hub as `szonyim/ithink-mq`. It self-versions: on every non-PR run it looks at the latest `v<major>.<minor>.<patch>` git tag reachable from history, bumps the patch number (starting at `1.0.0` if no such tag exists yet), tags and pushes that new version, and uses it (plus `latest`) as the Docker image tags. Don't hand-maintain a version anywhere else in the repo for this — the next workflow run derives it from the last pushed tag.
+
 ## Architecture
 
 - **Everything lives under `hu.ithink.mq`**, split by layer: `controllers`, `services`, `repositories`, `entities`, `models`, `exceptions`. There is no separate top-level package root anymore — new classes should nest under `hu.ithink.mq.<layer>`, matching the existing classes in that layer.

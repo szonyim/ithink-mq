@@ -9,11 +9,11 @@ on:
   schedule:
     - cron: '21 0 * * *'
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 env:
@@ -30,7 +30,8 @@ jobs:
       name: production
 
     permissions:
-      contents: read
+      # write is needed so this job can push the auto-incremented version tag
+      contents: write
       packages: write
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
@@ -39,6 +40,43 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          # full history + tags, needed to find the latest version tag below
+          fetch-depth: 0
+
+      # Semver versioning: look at the latest "v<major>.<minor>.<patch>" tag reachable
+      # from history and bump the patch number. If no such tag exists yet, this is the
+      # very first run, so start at 1.0.0. This only computes the version — it doesn't
+      # push anything, so it's safe to run for every trigger, including pull requests.
+      - name: Determine next version
+        id: version
+        run: |
+          set -euo pipefail
+          git fetch --tags --quiet
+          LATEST_TAG=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -n1)
+          if [ -z "$LATEST_TAG" ]; then
+            NEW_VERSION="1.0.0"
+          else
+            VERSION=${LATEST_TAG#v}
+            MAJOR=$(echo "$VERSION" | cut -d. -f1)
+            MINOR=$(echo "$VERSION" | cut -d. -f2)
+            PATCH=$(echo "$VERSION" | cut -d. -f3)
+            NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          fi
+          echo "version=${NEW_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Next version: ${NEW_VERSION} (previous: ${LATEST_TAG:-none})"
+
+      # Actually create and push the new version tag, so the *next* run of this
+      # workflow finds it and bumps again. Skipped on pull requests: PR builds
+      # shouldn't mint new releases, and forked PRs wouldn't have push access anyway.
+      - name: Tag new version
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
 
       - name: Set up JDK and Maven
         uses: actions/setup-java@v6
@@ -82,6 +120,9 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: szonyim/ithink-mq
+          tags: |
+            type=raw,value=${{ steps.version.outputs.version }}
+            type=raw,value=latest
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
